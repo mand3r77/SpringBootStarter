@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"	
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:component-scan base-package="com.uscs"/>	
+
+	<bean id="restTemplate" name="restTemplate" class="org.springframework.web.client.RestTemplate" autowire-candidate="true">
+	  <property name="messageConverters"> 
+	      <list> 
+	          <bean class="org.springframework.http.converter.FormHttpMessageConverter"/> 
+	          <bean class="org.springframework.http.converter.StringHttpMessageConverter" />
+	          <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+	      </list> 
+	  </property>
+	</bean>     
+
+	<bean id="auditTransactionManager"
+	  class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+	  scope="singleton" primary="true">
+	  <property name="dataSource" ref="auditDataSource" />
+	</bean>		
+	
+	<tx:annotation-driven transaction-manager="auditTransactionManager" />
+		
+	<!-- Begin profile definitions -->
+	<beans profile="dev">
+		<bean id="auditProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" lazy-init="false">		 		
+		 	<property name="ignoreResourceNotFound" value="true" />
+		 	<property name="locations">
+		 		<list>
+		 			<value>classpath:jdbc.properties</value>
+		 		</list>
+		 	</property>
+		    <property name="placeholderPrefix" value="$db{" />
+		    <property name="placeholderSuffix" value="}" />		 	
+		</bean>	
+		<bean id="ewmsProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" lazy-init="false">
+			<property name="ignoreResourceNotFound" value="false" />
+		 	<property name="locations">
+		 		<list>
+		 			<value>classpath:ewms.properties</value>
+		 		</list>
+		 	</property>
+		</bean>			
+	</beans>
+	
+	<beans profile="test,prod">
+		<bean id="auditProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" lazy-init="false">
+		 	<property name="ignoreResourceNotFound" value="true" />
+		 	<property name="locations">
+		 		<list>
+		 			<value>#{systemProperties['jdbcProps']}</value>
+		 		</list>
+		 	</property>
+		    <property name="placeholderPrefix" value="$db{" />
+		    <property name="placeholderSuffix" value="}" />
+		</bean>
+		<bean id="ewmsProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" lazy-init="false">
+			<property name="ignoreResourceNotFound" value="false" />		 	
+		 	<property name="locations">
+		 		<list>
+		 			<value>#{systemProperties['ewmsProps']}</value>
+		 		</list>
+		 	</property>
+		</bean>		
+	</beans>	
+	<!-- End profile definitions -->		
+</beans>

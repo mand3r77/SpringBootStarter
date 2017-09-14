@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<contextListener class="com.uscs.common.utils.logging.LogbackListener" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</Pattern>
+		</layout>
+	</appender>
+
+	<appender name="FILEOUT"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${BASE_DIR}/${LOG_FILE}.log</file>
+		<append>true</append>
+		<!-- Support multiple-JVM writing to the same log file -->
+		<prudent>true</prudent>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- Daily rollover -->
+			<fileNamePattern>${BASE_DIR}/${LOG_FILE}.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<!-- Keep 7 days' worth of history -->
+			<maxHistory>7</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>[%-5level] %d{HH:mm:ss.SSS} [%.6thread] %logger - %msg%n
+			</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+<!--  
+	<appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
+		<connectionSource class="ch.qos.logback.core.db.DataSourceConnectionSource">
+			<dataSource class="com.zaxxer.hikari.HikariDataSource">
+	            <driverClassName>com.ibm.as400.access.AS400JDBCDriver</driverClassName>
+	            <jdbcUrl>jdbc:as400://DEVDB2.USCOLD.COM</jdbcUrl>
+	            <username>HQIRSING</username>
+				<password></password>
+				<connectionTestQuery>SELECT 1</connectionTestQuery>
+			</dataSource>
+		</connectionSource>
+	</appender>
+-->
+<!-- 
+	<appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
+		<connectionSource class="ch.qos.logback.core.db.DataSourceConnectionSource">
+			<dataSource class="com.mchange.v2.c3p0.ComboPooledDataSource">
+				<driverClass>com.ibm.as400.access.AS400JDBCDriver</driverClass>
+				<jdbcUrl>jdbc:as400://DEVDB2.USCOLD.COM</jdbcUrl>
+				<user>HQIRSING</user>
+				<password></password>
+			</dataSource>
+		</connectionSource>
+	</appender>
+-->
+
+	<logger name="com.uscs" level="DEBUG" />
+	<logger name="org.springframework" level="DEBUG" />
+	<logger name="org.springframework.retry.support" level="TRACE" />
+	
+	<!-- <logger name="com.zaxxer" level="DEBUG" /> -->
+	<!-- <logger name="org.apache" level="DEBUG"/> -->
+
+
+	<root level="DEBUG">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILEOUT"/>
+		<!--  
+		<appender-ref ref="DB" />
+		-->
+	</root>
+</configuration>

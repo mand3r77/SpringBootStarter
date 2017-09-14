@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <bean id="mailHandler" class="com.uscs.common.handler.mail.MailHandler">
+        <property name="templateMessage" ref="templateMessage"/>
+    </bean>      
+
+	<!-- Begin profile definitions -->
+	<beans profile="dev">
+		<bean id="mailProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" lazy-init="false">		 		
+		 	<property name="ignoreResourceNotFound" value="true" />
+		 	<property name="locations">
+		 		<list>
+		 			<value>classpath:mail.properties</value>
+		 		</list>
+		 	</property>
+		    <property name="placeholderPrefix" value="$mail{" />
+		    <property name="placeholderSuffix" value="}" />			 	
+		</bean>	
+	</beans>
+	
+	<beans profile="test,prod">
+		<bean id="mailProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" lazy-init="false">
+		 	<property name="ignoreResourceNotFound" value="true" />
+		 	<property name="locations">
+		 		<list>
+		 			<value>#{systemProperties['mailProps']}</value>
+		 		</list>
+		 	</property>
+		    <property name="placeholderPrefix" value="$mail{" />
+		    <property name="placeholderSuffix" value="}" />			 	
+		</bean>
+	</beans>	
+	<!-- End profile definitions -->        
+</beans>
